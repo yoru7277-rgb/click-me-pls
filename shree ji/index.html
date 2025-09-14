@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Proposal</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: pink;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h2 {
+      font-size: 28px;
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+    }
+    .btn-container {
+      margin-top: 120px; /* thoda neeche buttons */
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #noBtn {
+      position: relative;
+    }
+    #popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+      display: none;
+      text-align: center;
+    }
+    #popup img {
+      margin-top: 10px;
+      max-width: 220px;
+      border-radius: 8px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body>
+  <h2>Do you love me? 🥺</h2>
+  <div class="btn-container">
+    <button class="btn" id="yesBtn">Yes</button>
+    <button class="btn" id="noBtn">No</button>
+  </div>
+
+  <!-- Popup -->
+  <div id="popup">
+    <p id="popupText"></p>
+    <img id="popupGif" src="" alt="reaction">
+    <br>
+    <button onclick="closePopup()">OK</button>
+  </div>
+
+  <script>
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const popup = document.getElementById("popup");
+    const popupText = document.getElementById("popupText");
+    const popupGif = document.getElementById("popupGif");
+
+    let noClicks = 0;
+    let activateRunaway = false;
+
+    const messages = [
+      {text: "Pakka? 🤨", gif: "https://media.giphy.com/media/jUwpNzg9IcyrK/giphy.gif"},
+      {text: "Ek aur baar soch lo 😏", gif: "https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif"},
+      {text: "Last chance...! 😳", gif: "https://media.giphy.com/media/26BRv0ThflsHCqDrG/giphy.gif"}
+    ];
+
+    // YES click -> pehli hi baar success
+    yesBtn.addEventListener("click", () => {
+      popupText.innerText = "Hehe, I knew it! Love you ❤️";
+      popupGif.src = "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif";
+      popup.style.display = "block";
+    });
+
+    // NO click -> teen baar tak popup, fir runaway mode
+    noBtn.addEventListener("click", () => {
+      noClicks++;
+      if (noClicks <= 3) {
+        popupText.innerText = messages[noClicks-1].text;
+        popupGif.src = messages[noClicks-1].gif;
+        popup.style.display = "block";
+      } else {
+        activateRunaway = true;
+      }
+    });
+
+    noBtn.addEventListener("mouseover", () => {
+      if (activateRunaway) {
+        const x = Math.floor(Math.random() * (window.innerWidth - 100));
+        const y = Math.floor(Math.random() * (window.innerHeight - 50));
+        noBtn.style.position = "absolute";
+        noBtn.style.left = x + "px";
+        noBtn.style.top = y + "px";
+      }
+    });
+
+    function closePopup() {
+      popup.style.display = "none";
+    }
+  </script>
+</body>
+</html>
