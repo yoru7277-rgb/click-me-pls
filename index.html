@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proposal</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: pink;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 32px;
+      margin-bottom: 30px;
+    }
+
+    /* Container for side-by-side buttons */
+    .button-container {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      position: relative;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #noBtn.runaway {
+      position: absolute; /* only runaway mode */
+    }
+
+    #popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+      display: none;
+      text-align: center;
+      max-width: 90%;
+      width: 400px;
+    }
+
+    #popup img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    #popup button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      h2 {
+        font-size: 6vw;
+      }
+      .btn {
+        padding: 4vw 8vw;
+        font-size: 5vw;
+      }
+      #popup {
+        width: 90vw;
+        padding: 5vw;
+      }
+      #popup p {
+        font-size: 5vw;
+      }
+      #popup button {
+        padding: 3vw 6vw;
+        font-size: 4vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>Do you love me? 🥺</h2>
+
+  <div class="button-container">
+    <button class="btn" id="yesBtn">Yes</button>
+    <button class="btn" id="noBtn">No</button>
+  </div>
+
+  <!-- Popup -->
+  <div id="popup">
+    <p id="popupText"></p>
+    <img id="popupGif" src="" alt="reaction">
+    <br>
+    <button onclick="closePopup()">OK</button>
+  </div>
+
+  <script>
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const popup = document.getElementById("popup");
+    const popupText = document.getElementById("popupText");
+    const popupGif = document.getElementById("popupGif");
+
+    let noClicks = 0;
+    let activateRunaway = false;
+
+    const messages = [
+      {text: "Pakka? 🤨", gif: "https://media.giphy.com/media/jUwpNzg9IcyrK/giphy.gif"},
+      {text: "Ek aur baar soch lo 😏", gif: "https://media.giphy.com/media/3o7abKhOpu0NwenH3O/giphy.gif"},
+      {text: "Last chance...! 😳", gif: "https://media.giphy.com/media/26BRv0ThflsHCqDrG/giphy.gif"}
+    ];
+
+    noBtn.addEventListener("click", () => {
+      noClicks++;
+      if (noClicks <= 3) {
+        popupText.innerText = messages[noClicks-1].text;
+        popupGif.src = messages[noClicks-1].gif;
+        popup.style.display = "block";
+      } else {
+        activateRunaway = true;
+        noBtn.classList.add("runaway");
+      }
+    });
+
+    function moveNoBtn(e) {
+      const btnWidth = noBtn.offsetWidth;
+      const btnHeight = noBtn.offsetHeight;
+      let x, y;
+
+      if (e.type.startsWith("touch")) {
+        // Mobile touch
+        const touch = e.touches[0];
+        x = window.innerWidth - touch.clientX - btnWidth;
+        y = window.innerHeight - touch.clientY - btnHeight;
+      } else {
+        // Desktop mouse
+        x = window.innerWidth - e.clientX - btnWidth;
+        y = window.innerHeight - e.clientY - btnHeight;
+      }
+
+      // Keep button inside viewport
+      x = Math.max(0, Math.min(x, window.innerWidth - btnWidth));
+      y = Math.max(0, Math.min(y, window.innerHeight - btnHeight));
+
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+    }
+
+    // Runaway events
+    noBtn.addEventListener("mousemove", (e) => {
+      if (activateRunaway) moveNoBtn(e);
+    });
+
+    noBtn.addEventListener("touchstart", (e) => {
+      if (activateRunaway) {
+        e.preventDefault();
+        moveNoBtn(e);
+      }
+    });
+
+    yesBtn.addEventListener("click", () => {
+      popupText.innerText = "Hehe, I knew it! Love you ❤️";
+      popupGif.src = "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif";
+      popup.style.display = "block";
+    });
+
+    function closePopup() {
+      popup.style.display = "none";
+    }
+
+    window.addEventListener('resize', () => {
+      if (activateRunaway) {
+        // Move noBtn to stay inside viewport after resize
+        const rect = noBtn.getBoundingClientRect();
+        if (rect.right > window.innerWidth || rect.bottom > window.innerHeight) {
+          noBtn.style.left = Math.min(rect.left, window.innerWidth - noBtn.offsetWidth) + "px";
+          noBtn.style.top = Math.min(rect.top, window.innerHeight - noBtn.offsetHeight) + "px";
+        }
+      }
+    });
+  </script>
+</body>
+</html>
